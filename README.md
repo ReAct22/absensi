@@ -1,0 +1,2 @@
+# absensi
+Sebuah aplikasi absensin
