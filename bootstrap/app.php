@@ -16,7 +16,15 @@ return Application::configure(basePath: dirname(__DIR__))
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class
         ]);
+        $middleware->alias([
+            'check.session' => \App\Http\Middleware\CheckSessionActive::class,
+            'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'office.ip' => \App\Http\Middleware\ValidateOfficeIp::class
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
+    })
+    ->withSchedule(function($schedule){
+        $schedule->command('app:clean-expired-sessions')->hourly();
     })->create();

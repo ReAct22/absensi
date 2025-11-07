@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OtpMail;
+use App\Models\LoginAudit;
+use App\Models\UserSession;
 use Carbon\Carbon;
 
 class AuthApiController extends Controller
@@ -17,34 +19,81 @@ class AuthApiController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required'
+            'password' => 'required',
+            'device_id' => 'required',
+            'device_name' => 'nullable'
         ]);
+
+        $auditdata = [
+            'email' => $request->email,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->header('user-agent'),
+            'logged_at' => now()
+        ];
 
         $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (!$user) {
+            LoginAudit::create(array_merge($auditdata, [
+                'success' => false,
+                'message' => 'email tidak ditemukan'
+            ]));
+        }
+
+        if (!Hash::check($request->password, $user->password)) {
+            LoginAudit::create(array_merge($auditdata, [
+                'user_id' => $user->id,
+                'success' => false,
+                'message' => 'Password salah'
+            ]));
             throw ValidationException::withMessages([
                 'email' => ['Email atau password salah']
             ]);
         }
 
-        // Generate OTP 6 digit
-        $otp = rand(100000, 999999);
-        // dd($user);
+        $device = $user->devices()->where('device_id', $request->device_id)->first();
 
-        // Simpan OTP ke database
-        $user->update([
-            'otp_code' => $otp,
-            'otp_expires_at' => Carbon::now()->addMinutes(5)
+        if (!$device) {
+            // Generate OTP 6 digit
+            $otp = rand(100000, 999999);
+            // dd($user);
+
+            // Simpan OTP ke database
+            $user->update([
+                'otp_code' => $otp,
+                'otp_expires_at' => Carbon::now()->addMinutes(5)
+            ]);
+
+
+            // Kirim OTP via email
+            Mail::to($user->email)->send(new OtpMail($otp));
+
+            return response()->json([
+                'message' => 'OTP telah dikirim ke email Anda',
+                'email' => $user->email
+            ]);
+        }
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        $device->update(['last_login_at' => now()]);
+
+        LoginAudit::create(array_merge($auditdata, [
+            'user_id' => $user->id,
+            'success' => true,
+            'message' => 'Login Berhasil'
+        ]));
+
+        UserSession::create([
+            'user_id' => $user->id,
+            'token' => $token,
+            'expires_at' => Carbon::now()->addMinutes(30)
         ]);
 
-
-        // Kirim OTP via email
-        Mail::to($user->email)->send(new OtpMail($otp));
-
         return response()->json([
-            'message' => 'OTP telah dikirim ke email Anda',
-            'email' => $user->email
+            'message' => 'Login Sukses',
+            'token' => $token,
+            'user' => $user
         ]);
     }
 
@@ -52,20 +101,29 @@ class AuthApiController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'otp_code' => 'required'
+            'otp_code' => 'required',
+            'device_id' => 'required',
+            'device_name' => 'nullable'
         ]);
 
         $user = User::where('email', $request->email)
             ->where('otp_code', $request->otp_code)
             ->first();
 
-        if(!$user){
-            return response()-> json(['message' => 'Kode OTP salah'], 401);
+        if (!$user) {
+            return response()->json(['message' => 'User tidak ditemukan']);
         }
 
-        if(Carbon::now()->greaterThan($user->otp_expires_at)){
-            return response()->json(['message' => 'Kode OTP telah Kadaluwars']);
+        if ($user->otp_code !== $request->otp_code || now()->greaterThan($user->otp_expires_at)) {
+            return response()->json(['message' => 'Kode OTP tidak valid atau sudah kedaluwars']);
         }
+
+        $user->devices()->create([
+            'device_id' => $request->device_id,
+            'device_name' => $request->device_name,
+            'ip_address' => $request->ip(),
+            'last_login_at' => now()
+        ]);
 
         // Hapus OTP setelah valid
         $user->update([
@@ -74,6 +132,25 @@ class AuthApiController extends Controller
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
+
+        UserSession::create([
+            'user_id' => $user->id,
+            'token' => $token,
+            'expires_at' => Carbon::now()->addMinutes(30)
+        ]);
+
+         $auditdata = [
+            'email' => $request->email,
+            'ip_address' => $request->ip,
+            'user_agent' => $request->header('user-agent'),
+            'logged_at' => now()
+        ];
+
+        LoginAudit::create(array_merge($auditdata, [
+            'user_id' => $user->id,
+            'success' => true,
+            'message' => 'Login Berhasil'
+        ]));
 
         return response()->json([
             'message' => 'Login berhasil',
@@ -84,7 +161,26 @@ class AuthApiController extends Controller
 
     public function logout(Request $request)
     {
+        $token = $request->bearerToken();
+        $user = $request->user();
+
+        // hapus Session
+        UserSession::where('token', $token)->delete();
+
         $request->user()->currentAccessToken()->delete();
+
+        $auditdata = [
+            'email' => $user->email,
+            'ip_address' => $request->ip,
+            'user_agent' => $request->header('user-agent'),
+            'logged_at' => now()
+        ];
+
+        LoginAudit::create(array_merge($auditdata, [
+            'user_id' => $user->id,
+            'success' => true,
+            'message' => 'Logout Sukses'
+        ]));
 
         return response()->json([
             'message' => 'Logout Sukses'
@@ -94,7 +190,7 @@ class AuthApiController extends Controller
     public function profile(Request $request)
     {
         return response()->json([
-            'user' => $request->user()
+            'user' => "Hallo Andrean"
         ]);
     }
 }
