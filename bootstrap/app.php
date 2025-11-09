@@ -19,7 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'check.session' => \App\Http\Middleware\CheckSessionActive::class,
             'role' => \App\Http\Middleware\RoleMiddleware::class,
-            'office.ip' => \App\Http\Middleware\ValidateOfficeIp::class
+            'office.ip' => \App\Http\Middleware\ValidateOfficeIp::class,
+            'roleweb' => \App\Http\Middleware\RolewebMiddleware::class
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
