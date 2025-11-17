@@ -36,8 +36,12 @@
                                             <td>{{$item->position_name}}</td>
                                             <td>{{$item->department->department_name}}</td>
                                             <td>
-                                                <a href="" class="btn btn-sm btn-warning">Edit</a>
-                                                <button class="btn btn-sm btn-danger">Delete</button>
+                                                <a href="{{route('position.edit', $item->id)}}" class="btn btn-sm btn-warning">Edit</a>
+                                                <form action="{{route('position.destroy', $item->id)}}" class="d-inline" method="post">
+                                                    @csrf
+                                                    @method('delete')
+                                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                                </form>
                                             </td>
                                         </tr>
                                     @empty

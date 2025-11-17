@@ -42,6 +42,7 @@ class PositionController extends Controller
         Position::create([
             'position_name' => $request->name,
             'department_id' => $request->department,
+            'description' => $request->name,
             'level' => $request->level
         ]);
 
@@ -61,7 +62,11 @@ class PositionController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $position = Position::findOrFail($id);
+
+        $department = Departments::all();
+
+        return view('pages.master.position.edit', compact('position', 'department'));
     }
 
     /**
@@ -69,7 +74,20 @@ class PositionController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'level' => 'required|integer'
+        ]);
+
+        $position = Position::findOrFail($id);
+
+        $position->update([
+            'position_name' => $request->name,
+            'department_id' => $position->department_id,
+            'level' => $request->level
+        ]);
+
+        return redirect()->route('position.index')->with('success', 'Data berhasil diperbarui');
     }
 
     /**
@@ -77,6 +95,10 @@ class PositionController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $position = Position::findOrFail($id);
+
+        $position->delete();
+
+        return redirect()->back()->with('success', 'Data berhasil dihapus');
     }
 }

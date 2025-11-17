@@ -8,9 +8,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Position extends Model
 {
     use SoftDeletes;
-    protected $fillabel = [
+    protected $fillable = [
         'position_name',
         'department_id',
+        'description',
         'level'
     ];
 
