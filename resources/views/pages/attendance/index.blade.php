@@ -4,9 +4,6 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-12 p-5">
-                <div class="mx-auto">
-                    <button class="btn btn-sm btn-success">Presensi Manual</button>
-                </div>
                 <div class="my-3">
                     <div class="card">
                         <div class="card-header">

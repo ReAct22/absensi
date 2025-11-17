@@ -23,7 +23,7 @@
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
           <li class="nav-item menu-open">
-            <a href="{{route('home')}}" class="nav-link {{Route::is('home') ? 'active' : ''}}">
+            <a href="{{route('dashboard')}}" class="nav-link {{Route::is('dashboard') ? 'active' : ''}}">
               <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>
                 Dashboard
@@ -42,19 +42,19 @@
               <li class="nav-item">
                 <a href="{{route('attendance.index')}}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Attendance</p>
+                  <p>Attendance List</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="pages/layout/top-nav-sidebar.html" class="nav-link">
+                <a href="{{route('presensi')}}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Top Navigation + Sidebar</p>
+                  <p>Presensi Manual</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="pages/layout/boxed.html" class="nav-link">
+                <a href="{{route('presensi.list')}}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Boxed</p>
+                  <p>List Approve Presensi</p>
                 </a>
               </li>
               <li class="nav-item">
@@ -93,7 +93,7 @@
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-chart-pie"></i>
               <p>
-                Charts
+                Master
                 <i class="right fas fa-angle-left"></i>
               </p>
             </a>
@@ -101,25 +101,19 @@
               <li class="nav-item">
                 <a href="pages/charts/chartjs.html" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>ChartJS</p>
+                  <p>Employee</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="pages/charts/flot.html" class="nav-link">
+                <a href="{{route('department.index')}}" class="nav-link {{Route::is('department.index') ? 'active' : ''}}">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Flot</p>
+                  <p>Department</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="pages/charts/inline.html" class="nav-link">
+                <a href="{{route('position.index')}}" class="nav-link {{Route::is('position.index') ? 'active' : ''}}">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Inline</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="pages/charts/uplot.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>uPlot</p>
+                  <p>Position</p>
                 </a>
               </li>
             </ul>
