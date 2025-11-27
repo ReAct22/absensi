@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Employee extends Model
 {
     use SoftDeletes;
-    protected $fillabel = [
+    protected $fillable = [
         'employee_code',
         'full_name',
         'email',

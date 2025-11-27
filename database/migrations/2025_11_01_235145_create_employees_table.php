@@ -23,7 +23,7 @@ return new class extends Migration
             $table->date('hire_date');
             $table->enum('employment_status', ['Tetap', 'Kontrak', 'Magang']);
             $table->string('photo_profile');
-            $table->foreignId('user_id');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->softDeletes();
             $table->timestamps();
         });

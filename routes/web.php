@@ -4,8 +4,10 @@ use App\Http\Controllers\AttendanceControler;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\PresensiManualController;
+use App\Http\Controllers\ShiftController;
 use App\Models\Position;
 use Illuminate\Support\Facades\Route;
 
@@ -20,5 +22,8 @@ Route::middleware(['auth', 'roleweb:HR'])->group(function() {
     Route::get('/presensi/list', [PresensiManualController::class, 'ListApprove'])->name('presensi.list');
     Route::resource('department', DepartmentController::class);
     Route::resource('position', PositionController::class);
+    Route::resource('employeed', EmployeeController::class );
+    Route::resource('shift', ShiftController::class);
+    Route::get('/get-position/{id}', [EmployeeController::class, 'GetPosition'])->name('employeed.getPosition');
 });
 

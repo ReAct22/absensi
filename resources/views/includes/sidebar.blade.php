@@ -89,8 +89,8 @@
               </li>
             </ul>
           </li>
-          <li class="nav-item">
-            <a href="#" class="nav-link">
+          <li class="nav-item {{Route::is('department.*') || Route::is('position.*') || Route::is('employeed.*') ? 'menu-open' : ''}}">
+            <a href="#" class="nav-link {{Route::is('department.*') || Route::is('position.*') || Route::is('employeed.*') ? 'active' : ''}}">
               <i class="nav-icon fas fa-chart-pie"></i>
               <p>
                 Master
@@ -99,19 +99,19 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="pages/charts/chartjs.html" class="nav-link">
+                <a href="{{route('employeed.index')}}" class="nav-link {{Route::is('employeed.*') ? 'active' : ''}}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Employee</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="{{route('department.index')}}" class="nav-link {{Route::is('department.index') ? 'active' : ''}}">
+                <a href="{{route('department.index')}}" class="nav-link {{Route::is('department.*') ? 'active' : ''}}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Department</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="{{route('position.index')}}" class="nav-link {{Route::is('position.index') ? 'active' : ''}}">
+                <a href="{{route('position.index')}}" class="nav-link {{Route::is('position.*') ? 'active' : ''}}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Position</p>
                 </a>
@@ -122,15 +122,15 @@
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-tree"></i>
               <p>
-                UI Elements
+                Shift
                 <i class="fas fa-angle-left right"></i>
               </p>
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="pages/UI/general.html" class="nav-link">
+                <a href="{{route('shift.index')}}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>General</p>
+                  <p>Shift Manajement</p>
                 </a>
               </li>
               <li class="nav-item">
