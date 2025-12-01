@@ -134,9 +134,9 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="pages/UI/icons.html" class="nav-link">
+                <a href="{{route('employee-shift.index')}}" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Icons</p>
+                  <p>Employee Shift</p>
                 </a>
               </li>
               <li class="nav-item">

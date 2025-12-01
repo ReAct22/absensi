@@ -21,7 +21,7 @@ class ShiftController extends Controller
      */
     public function create()
     {
-        //
+        return view('pages.shift.create');
     }
 
     /**
@@ -29,7 +29,23 @@ class ShiftController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i',
+            'tolerance_time' => 'required|string',
+            'working_days' => 'required|string'
+        ]);
+
+        Shift::create([
+            'shift_name' => $request->name,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+            'tolerance_time' => $request->tolerance_time,
+            'working_days' => $request->working_days
+        ]);
+
+        return redirect()->route('shift.index')->with('success', 'Data berhasil disimpan');
     }
 
     /**
@@ -45,7 +61,9 @@ class ShiftController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $shift = Shift::findOrFail($id);
+
+        return view('pages.shift.edit', compact('shift'));
     }
 
     /**
@@ -53,7 +71,26 @@ class ShiftController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $shift = Shift::findOrFail($id);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i',
+            'tolerance_time' => 'required|string',
+            'working_days' => 'nullable|string'
+        ]);
+
+        $shift->update([
+            'shift_name' => $request->name,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+            'tolarance_time' => $request->tolerance_time,
+            'working_days' => $shift->working_days
+        ]);
+
+        return redirect()->route('shift.index')->with('success', 'Data berhasil diubah');
+
     }
 
     /**
@@ -61,6 +98,10 @@ class ShiftController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $shift = Shift::findOrFail($id);
+
+        $shift->delete();
+
+        return redirect()->back()->with('success', 'Data berhasil dihapus');
     }
 }

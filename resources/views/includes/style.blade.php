@@ -22,3 +22,7 @@
 <!-- DatePicker -->
 <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+<!-- Time picker -->
+ <<link href="https://rawgit.com/grudus/Timepicker/master/dist/index.css" type="text/css" rel="stylesheet">
+
+

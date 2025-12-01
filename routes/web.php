@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EmployeeShiftController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\PresensiManualController;
 use App\Http\Controllers\ShiftController;
@@ -24,6 +25,7 @@ Route::middleware(['auth', 'roleweb:HR'])->group(function() {
     Route::resource('position', PositionController::class);
     Route::resource('employeed', EmployeeController::class );
     Route::resource('shift', ShiftController::class);
+    Route::resource('employee-shift', EmployeeShiftController::class);
     Route::get('/get-position/{id}', [EmployeeController::class, 'GetPosition'])->name('employeed.getPosition');
 });
 

@@ -4,6 +4,11 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-12">
+                @if (session('success'))
+                    <div class="alert alert-success">
+                        {{session('success')}}
+                    </div>
+                @endif
                 <div class="my-3">
                     <a href="{{route('employeed.create')}}" class="btn btn-sm btn-success">Add New</a>
                 </div>

@@ -22,7 +22,7 @@ class EmployeeController extends Controller
         $date = now()->format('ymd');
 
         // ambil data terakhir hari ini
-        $last = Employee::whereDate('created_at', now())
+                      $last = Employee::whereDate('created_at', now())
         ->orderBy('id', 'DESC')
         ->first();
 
@@ -95,7 +95,7 @@ class EmployeeController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make('1235678'),
-            'role' => $position->position_name == 'Manager' ? 'Manager' : 'Pegawai'
+            'role' => $request->position == 'Manager' ? 'Manager' : 'Pegawai'
         ]);
 
         Employee::create([

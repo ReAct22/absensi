@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\api\ApiLeaverequestController;
 use App\Http\Controllers\api\AttendanceController;
 use App\Http\Controllers\api\AuthApiController;
 use App\Http\Controllers\api\UserLocationController;
@@ -23,5 +24,6 @@ Route::middleware('auth:sanctum', 'check.session')->group(function () {
     Route::post('/attendance/checkin', [AttendanceController::class, 'checkIn']);
     Route::post('/attendance/checkout', [AttendanceController::class, 'checkOut']);
     Route::get('/location/history', [UserLocationController::class, 'history']);
+    Route::post('/leave-request/store', [ApiLeaverequestController::class, 'leave_request']);
     Route::post('/logout', [AuthApiController::class, 'logout']);
 });
