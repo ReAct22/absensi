@@ -4,7 +4,9 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Mail\LeaveMail;
+use App\Models\Employee;
 use App\Models\LeaveRequest;
+use App\Models\Position;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,9 +35,14 @@ class ApiLeaverequestController extends Controller
             $attachment = $request->file('attachment')->store('document', 'public');
         }
 
-        $email = Auth::user()->email;
+        $employee = Employee::findOrFail($request->employee_id);
 
-        Mail::to($email)->send(new LeaveMail($request->employee_id, $request->start_date, $request->end_date, $total_days, $attachment));
+        $position = Position::where('department_id', $employee->department_id)
+        ->where('position_name','Manager')->first();
+
+        $email_atas = Employee::where('position_id', $position->id)->first();
+
+        Mail::to($email_atas->email)->send(new LeaveMail($request->employee_id, $request->start_date, $request->end_date, $total_days, $attachment, $email_atas->email));
 
         LeaveRequest::create([
             'employee_id' => $request->employee_id,
@@ -51,4 +58,27 @@ class ApiLeaverequestController extends Controller
             'message' => 'Leave Request at the post'
         ]);
     }
+
+    public function ApproveLeave(Request $request){
+        $request->validate([
+            'name_bos' => 'required|string|min:10',
+            'status' => 'required|string',
+            'date_approve' => 'required|date',
+            'employee_id' => 'required|integer'
+        ]);
+
+        $employee_request = LeaveRequest::where('employee_id', $request->employee_id)->first();
+
+        $employee_request->update([
+            'approve_by' => $request->name_bos,
+            'approve_date' => $request->date_approve,
+            'status' => $request->status
+        ]);
+
+        return response()->json([
+            'message' => 'Your Request as approve'
+        ]);
+
+    }
+
 }

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthApiController::class, 'login']);
 Route::post('/verify-otp', [AuthApiController::class, 'verifyOtp']);
+Route::post('/leave-request/approve', [ApiLeaverequestController::class, 'ApproveLeave']);
 
 Route::middleware('auth:sanctum', 'check.session')->group(function () {
     Route::get('/profile', [AuthApiController::class, 'profile']);
