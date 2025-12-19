@@ -54,7 +54,7 @@ class AuthApiController extends Controller
                     'message' => 'OTP telah dikirim ke email Anda',
                     'email' => $user->email,
                     'data' => []
-                ]);
+                ], 200);
             }
 
             $token = $user->createToken('auth_token')->plainTextToken;
@@ -69,7 +69,7 @@ class AuthApiController extends Controller
                 'status' => false,
                 'message' => 'Terjadi kesalahan: ' . $e,
                 'data' => []
-            ]);
+            ], 405);
         }
     }
 
@@ -137,13 +137,13 @@ class AuthApiController extends Controller
                 'message' => 'Login berhasil',
                 'data' => $profile,
                 'token' => $token
-            ]);
+            ], 200);
         } catch (Exception $e) {
             return response()->json([
                 'status' => false,
                 'message' => 'Terjadi kesalahan: ' . $e,
                 'data' => []
-            ]);
+            ], 405);
         }
     }
 
