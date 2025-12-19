@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeShiftController;
+use App\Http\Controllers\GeoController;
 use App\Http\Controllers\LeaveApproveController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\PresensiManualController;
@@ -28,6 +29,7 @@ Route::middleware(['auth', 'roleweb:HR'])->group(function () {
     Route::resource('shift', ShiftController::class);
     Route::resource('employee-shift', EmployeeShiftController::class);
     Route::resource('leave-approve', LeaveApproveController::class);
+    Route::resource('geo-fance', GeoController::class);
     Route::get('/get-position/{id}', [EmployeeController::class, 'GetPosition'])->name('employeed.getPosition');
 });
 
