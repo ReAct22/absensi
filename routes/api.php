@@ -22,8 +22,9 @@ Route::middleware('auth:sanctum', 'check.session')->group(function () {
     Route::middleware(['office.ip'])->group(function() {
         Route::post('/location', [UserLocationController::class, 'store']);
     });
-    Route::post('/attendance/checkin', [AttendanceController::class, 'checkIn']);
-    Route::post('/attendance/checkout', [AttendanceController::class, 'checkOut']);
+    Route::post('/attendance/presensi', [AttendanceController::class, 'store']);
+    Route::get('/attendance/daily/{id}', [AttendanceController::class, 'presensiDaily']);
+    Route::get('/attendance/history/{id}', [AttendanceController::class, 'history']);
     Route::get('/location/history', [UserLocationController::class, 'history']);
     Route::post('/leave-request/store', [ApiLeaverequestController::class, 'leave_request']);
     Route::post('/logout', [AuthApiController::class, 'logout']);

@@ -15,20 +15,23 @@
                                     <label for="" class="form-label">Nama Pegawai</label>
                                     <select name="employee_id" class="form-control" id="">
                                         <option value="">Pilih Nama Pegawai</option>
+                                        @foreach ($employees as $item)
+                                            <option value="{{$item->id}}">{{$item->full_name}}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="mt-3">
                                             <label for="" class="form-label">Check-in</label>
-                                            <input type="time" class="form-control" name="" id="">
+                                            <input type="time" class="form-control" name="check_in" id="">
                                         </div>
 
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mt-3">
                                             <label for="" class="form-label">Check-out</label>
-                                            <input type="time" class="form-control" name="" id="">
+                                            <input type="time" class="form-control" name="check_out" id="">
                                         </div>
                                     </div>
                                 </div>

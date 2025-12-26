@@ -59,6 +59,25 @@ class AuthApiController extends Controller
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
+            UserSession::create([
+                'user_id' => $user->id,
+                'token' => $token,
+                'expires_at' => Carbon::now()->addMinutes(30)
+            ]);
+
+            $auditdata = [
+                'email' => $request->email,
+                'ip_address' => $request->ip,
+                'user_agent' => $request->header('user-agent'),
+                'logged_at' => now()
+            ];
+
+            LoginAudit::create(array_merge($auditdata, [
+                'user_id' => $user->id,
+                'success' => true,
+                'message' => 'Login Berhasil'
+            ]));
+
             return response()->json([
                 'message' => 'Login sukses',
                 'token' => $token,

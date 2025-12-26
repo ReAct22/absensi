@@ -8,6 +8,7 @@ use App\Models\Employee;
 use App\Models\LeaveRequest;
 use App\Models\Position;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -79,6 +80,35 @@ class ApiLeaverequestController extends Controller
             'message' => 'Your Request as approve'
         ]);
 
+    }
+
+    public function getLeave(Request $request){
+        $request->validate([
+            'code' => 'required'
+        ]);
+
+        try{
+            $data = LeaveRequest::where('employee_id', $request->code)
+            ->first();
+            if($data){
+                return response()->json([
+                    'status'=> true,
+                    'message' => 'Data berhasil dipanggil',
+                    'data' => $data
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data berhasil dipanggil',
+                    'data' => []
+                ], 200);
+            }
+        } catch (Exception $e){
+            return response()->json([
+                'status' => false,
+                'message' => 'Terjadi kesalahan pada sistem '.$e
+            ]);
+        }
     }
 
 }

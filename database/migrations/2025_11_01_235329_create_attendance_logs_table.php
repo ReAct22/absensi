@@ -13,13 +13,15 @@ return new class extends Migration
     {
         Schema::create('attendance_logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('employee_id');
-            $table->time('check_in_time');
-            $table->time('check_out_time');
-            $table->decimal('location_lat');
-            $table->decimal('location_long');
-            $table->enum('status', ['Hadir', 'Terlambat', 'Pulang Cepat', 'Lembur', 'Izin', 'Alpha'])->default('Hadir');
-            $table->decimal('total_work_hours');
+            $table->foreignId('employee_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->time('time')->nullable();
+            $table->decimal('latitude', 10, 7)->nullable();
+            $table->decimal('longitude', 10, 7)->nullable();
+            $table->string('photoPath')->nullable();
+            $table->enum('flag', ['check-in', 'check-out']);
             $table->softDeletes();
             $table->timestamps();
         });

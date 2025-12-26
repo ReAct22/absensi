@@ -17,27 +17,28 @@ class EmployeeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function generateKodeKaryawan(){
+    public function generateKodeKaryawan()
+    {
         $prefix = "SPK";
         $date = now()->format('ymd');
 
-        // ambil data terakhir hari ini
-                      $last = Employee::whereDate('created_at', now())
-        ->orderBy('id', 'DESC')
-        ->first();
+        $last = Employee::orderBy('id', 'DESC')->first();
 
-        if($last){
-            $number = intval(substr($last->employee_code, -4) + 1);
+        if ($last) {
+            $number = intval(substr($last->employee_code, -4)) + 1;
         } else {
             $number = 1;
         }
 
         $running = str_pad($number, 4, '0', STR_PAD_LEFT);
 
-        return $prefix.$date.$running;
+        return $prefix . $date . $running;
     }
 
-    public function GetPosition($id_department){
+
+
+    public function GetPosition($id_department)
+    {
         $positions = Position::where('department_id', $id_department)->get();
         return response()->json($positions);
     }
@@ -87,7 +88,7 @@ class EmployeeController extends Controller
 
         $profilePath = null;
 
-        if($request->hasFile('photo')){
+        if ($request->hasFile('photo')) {
             $profilePath = $request->file('photo')->store('profile', 'public');
         }
 
@@ -147,7 +148,7 @@ class EmployeeController extends Controller
     public function destroy(string $id)
     {
         $employeed = Employee::findOrFail($id);
-        if($employeed->photo_profile && Storage::disk('public')->exists($employeed->photo_profile)){
+        if ($employeed->photo_profile && Storage::disk('public')->exists($employeed->photo_profile)) {
             Storage::disk('public')->delete($employeed->photo_profile);
         }
 

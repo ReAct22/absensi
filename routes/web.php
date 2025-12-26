@@ -11,6 +11,7 @@ use App\Http\Controllers\LeaveApproveController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\PresensiManualController;
 use App\Http\Controllers\ShiftController;
+use App\Http\Controllers\UserManagementController;
 use App\Models\Position;
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +31,7 @@ Route::middleware(['auth', 'roleweb:HR'])->group(function () {
     Route::resource('employee-shift', EmployeeShiftController::class);
     Route::resource('leave-approve', LeaveApproveController::class);
     Route::resource('geo-fance', GeoController::class);
+    Route::resource('user', UserManagementController::class);
     Route::get('/get-position/{id}', [EmployeeController::class, 'GetPosition'])->name('employeed.getPosition');
 });
 

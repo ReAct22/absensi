@@ -8,122 +8,174 @@ use App\Models\AttendanceLog;
 use App\Models\GeoFence;
 use App\Models\UserLocation;
 use Carbon\Carbon;
+// use Illuminate\Container\Attributes\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+// use Illuminate\Support\Facades\DB as FacadesDB;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
+
+use function Symfony\Component\Clock\now;
 
 class AttendanceController extends Controller
 {
-    public function checkIn(Request $request)
+    public function presensiDaily($employee_id)
+    {
+        $date = Carbon::now();
+
+        $presensi = AttendanceLog::where('employee_id', $employee_id)
+            ->whereDate('created_at', $date)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        return response()->json([
+            'status' => true,
+            'message' => "Data berhasil diambil",
+            'data' => $presensi
+        ], 200);
+    }
+
+    public function history($employee_id)
+    {
+        $data = DB::table('attendance_logs as al')
+            ->leftJoin('employees as e', 'al.employee_id', '=', 'e.id')
+            ->select(
+                'al.employee_id',
+                'e.full_name',
+
+                DB::raw("MAX(CASE WHEN al.flag = 'check-in' THEN al.time END) AS time_checkin"),
+                DB::raw("MAX(CASE WHEN al.flag = 'check-out' THEN al.time END) AS time_checkout"),
+
+                DB::raw("MAX(CASE WHEN al.flag = 'check-in' THEN al.photoPath END) AS photo_in"),
+                DB::raw("MAX(CASE WHEN al.flag = 'check-out' THEN al.photoPath END) AS photo_out"),
+
+                DB::raw("MAX(CASE WHEN al.flag = 'check-in' THEN al.longitude END) AS longitude_in"),
+                DB::raw("MAX(CASE WHEN al.flag = 'check-in' THEN al.latitude END) AS latitude_in"),
+
+                DB::raw("MAX(CASE WHEN al.flag = 'check-out' THEN al.longitude END) AS longitude_out"),
+                DB::raw("MAX(CASE WHEN al.flag = 'check-out' THEN al.latitude END) AS latitude_out"),
+
+                DB::raw("
+            MAX(
+                CASE
+                    WHEN al.flag = 'check-out' AND al.time < '17:00:00' THEN 'Pulang Cepat'
+                    WHEN al.flag = 'check-out' AND al.time > '17:00:00' THEN 'Lembur'
+                    WHEN al.flag = 'check-out' AND al.time = '17:00:00' THEN 'Hadir'
+                    ELSE 'Absen'
+                END
+            ) AS status
+        ")
+            )
+            ->where('al.employee_id', $employee_id)
+            ->groupBy('al.employee_id', 'e.full_name')
+            ->first(); // karena hasilnya 1 row
+        // dd($data);
+        return response()->json([
+            'status' => true,
+            'message' => 'Data berhasil di ambil',
+            'data' => $data
+        ], 200);
+    }
+
+    public function store(Request $request)
     {
         $request->validate([
-            'longtitude' => 'required|numeric',
+            'time' => 'required',
+            'longitude' => 'required|numeric',
             'latitude' => 'required|numeric',
             'photo' => 'required|image|mimes:png,jpg,jpeg|max:2048'
         ]);
 
+        $employeeId = Auth::user()->employee->id;
 
-
-        $geo = GeoFence::first();
-
-        if(!$request->hasFile('photo')){
-            return response()->json([
-                'status' => false,
-                'message' => "silahkan lakukan selfi"
-            ], 404);
-        }
-
-        $photoPath = $request->file('photo')->store('attendance/selfies', 'public');
-
-        $employeId = Auth::id();
-        $officeLat = $geo->latitude;
-        $officeLong = $geo->longtitude;
-        $radius = $geo->radius;
-
-        $distance = GeoHelper::distance(
-            $officeLat,
-            $officeLong,
-            $request->latitude,
-            $request->longtitude
-        );
-
-        if ($distance > $radius) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Anda berada di luar area kantor. Check-In ditolak',
-                'distance_m' => round($distance, 2)
-            ]);
-        }
-
-        $now = Carbon::now();
-
-        $attendance = AttendanceLog::create([
-            'employee_id' => $employeId,
-            'check_in_time' => $now->format('H:i:s'),
-            'location_lat' => $request->latitude,
-            'location_long' => $request->longtitude,
-            'status' => $now->gt(Carbon::parse('08:00:00')) ? 'Terlambat' : 'Hadir',
-            'photo_path' => $photoPath
-        ]);
-
-        UserLocation::create([
-            'user_id' => $employeId,
-            'latitude' => $request->latitude,
-            'longtitude' => $request->longtitude,
-            'tracked_at' => now()
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Check-In berhasil',
-            'data' => $attendance
-        ]);
-    }
-
-    public function checkOut(Request $request)
-    {
-        $request->validate([
-            'longtitude' => 'required|numeric',
-            'latitude' => 'required|numeric',
-            'photo' => 'required|mimes:png,jpg,jpeg|max:2048'
-        ]);
-
-        $user = Auth::user();
-
-        if(!$request->hasFile('photo')){
-            return response()->json([
-                'status' => false,
-                'message' => "Silahkan melakukan selfie"
-            ], 404);
-        }
-
-        $photoPath = $request->file('photo')->store('attendance/selfies', 'public');
-
-        $attendance = AttendanceLog::where('employee_id', $user->id)
-            ->whereNull('check_out_time')
-            ->latest('check_in_time')
+        $presensi = AttendanceLog::where('employee_id', $employeeId)
+            ->whereDate('created_at', now())
             ->first();
 
-        if(!$attendance){
+        if ($presensi == null) {
+            // dd($presensi->flag);
+            $geo = GeoFence::first();
+
+            if (!$request->hasFile('photo')) {
+                return response()->json([
+                    'status' => true,
+                    'message' => "Silahkan lakukan selfi",
+                    'data' => []
+                ], 400);
+            }
+
+            $photoPath = $request->file('photo')->store('attendance/selfi', 'public');
+            $distance = GeoHelper::distance(
+                $geo->latitude,
+                $geo->longtitude,
+                $request->latitude,
+                $request->longitude
+            );
+
+            if ($distance > $geo->radius) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Anda berada diluar radius ' . $distance,
+                    'data' => []
+                ], 403);
+            }
+
+            $data = AttendanceLog::create([
+                'employee_id' => $employeeId,
+                'time' => $request->time,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
+                'photoPath' => $photoPath,
+                'flag' => 'Check-in'
+            ]);
+
             return response()->json([
-                'success' => false,
-                'message' => 'Tidak ada data Check-In yang aktif untuk user ini'
-            ], 404);
+                'status' => true,
+                'message' => 'Presensi berhasil',
+                'data' => $data
+            ], 200);
+        } else {
+            // dd($presensi->flag);
+            $geo = GeoFence::first();
+
+            if (!$request->hasFile('photo')) {
+                return response()->json([
+                    'status' => true,
+                    'message' => "Silahkan lakukan selfi",
+                    'data' => []
+                ], 400);
+            }
+
+            $photoPath = $request->file('photo')->store('attendance/selfi', 'public');
+            $distance = GeoHelper::distance(
+                $geo->latitude,
+                $geo->longtitude,
+                $request->latitude,
+                $request->longitude
+            );
+
+            if ($distance > $geo->radius) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Anda berada diluar radius ' . $distance,
+                    'data' => []
+                ], 403);
+            }
+
+            $data = AttendanceLog::create([
+                'employee_id' => $employeeId,
+                'time' => $request->time,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
+                'photoPath' => $photoPath,
+                'flag' => 'Check-out'
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Presensi berhasil',
+                'data' => $data
+            ], 200);
         }
-
-        $now = Carbon::now();
-        $checkInTime = Carbon::parse($attendance->check_in_time);
-        $checkOutTime = $checkInTime->diffInHours($now);
-
-        $attendance->update([
-            'check_out_time' => $now->format('H:i:s'),
-            'total_work_hours' => $checkOutTime,
-            'photo_out' => $photoPath
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Check-Out berhasil',
-            'data' => $attendance
-        ], 201);
     }
 }

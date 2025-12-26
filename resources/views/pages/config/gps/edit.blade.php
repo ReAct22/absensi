@@ -9,43 +9,47 @@
                         <h5 class="card-title fw-bold">{{ $geoFence->name }}</h5>
                     </div>
                     <div class="card-body">
-                        <div class="mt-3">
-                            <label for="" class="form-label">Name</label>
-                            <input type="text" name="name"
-                                class="form-control @error('name')
+                        <form action="{{route('geo-fance.update', $geoFence->id)}}" method="POST">
+                            @method('PUT')
+                            @csrf
+                            <div class="mt-3">
+                                <label for="" class="form-label">Name</label>
+                                <input type="text" name="name"
+                                    class="form-control @error('name')
                                 is-invalid
                             @enderror"
-                                value="{{ $geoFence->name }}">
-                            @error('name')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-                        <div class="mt-3">
-                            <label for="" class="form-label">GeoLocation</label>
-                            <div id="map" style="height: 400px"></div>
-                            <input type="hidden" name="longtitude" id="longtitude" value="{{ $geoFence->longtitude }}">
-                            <input type="hidden" name="latitude" id="latitude" value="{{ $geoFence->latitude }}">
-                            @error('longtitude')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                            @error('latitude')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-                        <div class="mt-3">
-                            <label for="" class="form-label">Radius</label>
-                            <input type="text" name="radius"
-                                class="form-control @error('radius')
+                                    value="{{ $geoFence->name }}">
+                                @error('name')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                            <div class="mt-3">
+                                <label for="" class="form-label">GeoLocation</label>
+                                <div id="map" style="height: 400px"></div>
+                                <input type="hidden" name="longtitude" id="longtitude" value="{{ $geoFence->longtitude }}">
+                                <input type="hidden" name="latitude" id="latitude" value="{{ $geoFence->latitude }}">
+                                @error('longtitude')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                                @error('latitude')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                            <div class="mt-3">
+                                <label for="" class="form-label">Radius</label>
+                                <input type="text" name="radius"
+                                    class="form-control @error('radius')
                                 is-invalid
                             @enderror"
-                                value="{{ $geoFence->radius }}">
-                            @error('radius')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-                        <div class="mt-3">
-                            <button class="btn btn-sm btn-primary" type="submit">Update</button>
-                        </div>
+                                    value="{{ $geoFence->radius }}">
+                                @error('radius')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                            <div class="mt-3">
+                                <button class="btn btn-sm btn-primary" type="submit">Update</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -64,15 +68,15 @@
 
         map.setView([lat, long], 16);
         L.marker([lat, long])
-        .addTo(map)
+            .addTo(map)
 
         let marker;
 
-        map.on('click', function(e){
+        map.on('click', function(e) {
             const lat = e.latlng.lat;
             const lng = e.latlng.lng;
 
-            if(marker){
+            if (marker) {
                 marker.setLatLng(e.latlng);
             } else {
                 marker = L.marker(e.latlng).addTo(map);

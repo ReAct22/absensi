@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\GeoFence;
+use Exception;
 use Illuminate\Http\Request;
 
 class GeoController extends Controller
@@ -78,6 +79,19 @@ class GeoController extends Controller
             'name' => 'string|max:255',
             'radius' => 'integer'
         ]);
+
+        try{
+            $geo->update([
+                'name' => $request->name,
+                'latitude' => $request->latitude,
+                'longtitude' => $request->longtitude,
+                'radius' => $request->radius
+            ]);
+
+            return redirect()->route('geo-fance.index')->with('success', 'Data berhasil diupdate');
+        }catch(Exception $e){
+            return redirect()->back()->with('error', 'Terjadi kesalahan: '.$e);
+        }
     }
 
     /**
@@ -85,6 +99,9 @@ class GeoController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $geo = GeoFence::findOrFail($id);
+
+        $geo->delete();
+        return redirect()->route('geo-fance.index')->with('success', 'Data berhasil dihapus');
     }
 }

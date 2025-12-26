@@ -38,7 +38,11 @@
                                             <td>
                                                 <a href="{{route('geo-fance.edit', $item->id)}}" class="btn btn-sm btn-warning">Edit</a>
                                                 <a href="{{route('geo-fance.show', $item->id)}}" class="btn btn-success btn-sm">Show</a>
-                                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                                <form action="{{route('geo-fance.destroy', $item->id)}}" class="d-inline" method="POST">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button class="btn btn-sm btn-danger" type="submit">delete</button>
+                                                </form>
                                             </td>
                                         </tr>
                                     @empty
