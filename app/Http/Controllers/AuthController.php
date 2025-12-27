@@ -25,7 +25,7 @@ class AuthController extends Controller
         // Coba autentikasi langsung dengan Auth
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate(); // Hindari session fixation
-            return redirect()->intended('dashboard'); // Redirect ke tujuan awal atau home
+            return redirect()->route('dashboard');// Redirect ke tujuan awal atau home
         }
 
         // Jika gagal login

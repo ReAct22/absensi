@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <title>Izin Cuti Karyawan</title>
 </head>
+
 <body style="font-family: Arial, sans-serif; color: #333;">
 
     <h2 style="text-align: center;">Izin Cuti Karyawan</h2>
@@ -34,14 +36,8 @@
     </table>
 
     <div style="text-align: center; margin-top: 20px;">
-        <form action="{{url('/leave-request/approve')}}" method="POST">
-            @csrf
-            <input type="hidden" name="name_bos" value="{{$name_bos}}">
-            <input type="hidden" name="status" value="{{$status}}">
-            <input type="hidden" name="date_approve" value="{{now()}}">
-            <input type="hidden" name="employee_id" value="{{$employee_id}}">
-            <button type="submit""
-           style="
+        <a href="{{route('leave-approve.show', $id)}}"
+            style="
                display: inline-block;
                padding: 10px 20px;
                background-color: #4CAF50;
@@ -50,14 +46,15 @@
                border-radius: 5px;
            ">
             Approve Request
-        </button>
-        </form>
+        </a>
     </div>
     <div style="text-align: center; margin-top: 20px">
-        <a href="" style="display: inline-block; padding: 10px 20px; background-color: red; color: white; text-decoration: none; border-radius: 5px">
+        <a href=""
+            style="display: inline-block; padding: 10px 20px; background-color: red; color: white; text-decoration: none; border-radius: 5px">
             Reject Request
         </a>
     </div>
 
 </body>
+
 </html>

@@ -30,7 +30,8 @@ class LeaveMail extends Mailable
     public $date_approve;
     public $status;
     public $email_atasan;
-    public function __construct($employee_id, $start_date, $end_date, $total_days, $attachment, $email_atasan)
+    public $id;
+    public function __construct($employee_id, $start_date, $end_date, $total_days, $attachment, $email_atasan, $id)
     {
         $employee = Employee::findOrFail($employee_id);
         $atasan = Employee::where('email', $email_atasan)->first();
@@ -45,6 +46,7 @@ class LeaveMail extends Mailable
         $this->date_approve = Carbon::now();
         $this->status = 'approved';
         $this->email_atasan = $email_atasan;
+        $this->id = $id;
     }
 
     /**
@@ -74,7 +76,8 @@ class LeaveMail extends Mailable
                 'total_days' => $this->total_days,
                 'name_bos' => $this->name_bos,
                 'status' => $this->status,
-                'employee_id' => $this->employee_id
+                'employee_id' => $this->employee_id,
+                'id_leave' => $this->id
             ]
         );
     }

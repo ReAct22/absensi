@@ -40,12 +40,12 @@ class ApiLeaverequestController extends Controller
 
         $position = Position::where('department_id', $employee->department_id)
         ->where('position_name','Manager')->first();
+        // dd($position);
 
         $email_atas = Employee::where('position_id', $position->id)->first();
+        // dd($email_atas);
 
-        Mail::to($email_atas->email)->send(new LeaveMail($request->employee_id, $request->start_date, $request->end_date, $total_days, $attachment, $email_atas->email));
-
-        LeaveRequest::create([
+        $data = LeaveRequest::create([
             'employee_id' => $request->employee_id,
             'leave_type' => $request->leave_type,
             'start_date' => $request->start_date,
@@ -55,6 +55,7 @@ class ApiLeaverequestController extends Controller
             'attachment' => $attachment
         ]);
 
+        Mail::to($email_atas->email)->send(new LeaveMail($request->employee_id, $request->start_date, $request->end_date, $total_days, $attachment, $email_atas->email, $data->id));
         return response()->json([
             'message' => 'Leave Request at the post'
         ]);
@@ -109,6 +110,16 @@ class ApiLeaverequestController extends Controller
                 'message' => 'Terjadi kesalahan pada sistem '.$e
             ]);
         }
+    }
+
+    public function historyLeave(){
+        $history = LeaveRequest::all();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Data berhasil diambil',
+            'data' => $history
+        ], 200);
     }
 
 }
