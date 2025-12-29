@@ -14,6 +14,7 @@ use App\Models\LoginAudit;
 use App\Models\UserSession;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 
 class AuthApiController extends Controller
 {
@@ -194,10 +195,14 @@ class AuthApiController extends Controller
         ]);
     }
 
-    public function profile(Request $request)
+    public function profile()
     {
+        $user = Auth::user()->id;
+        $data = Employee::findOrFail($user);
         return response()->json([
-            'user' => "Hallo Andrean"
+            'status' => true,
+            'message' => 'Data berhasil di ambil',
+            'data' => $data
         ]);
     }
 }

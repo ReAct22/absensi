@@ -83,14 +83,13 @@ class ApiLeaverequestController extends Controller
 
     }
 
-    public function getLeave(Request $request){
-        $request->validate([
-            'code' => 'required'
-        ]);
-
+    public function getLeave(){
         try{
-            $data = LeaveRequest::where('employee_id', $request->code)
-            ->first();
+            $user_id = Auth::user()->id;
+            $employee = Employee::where('user_id', $user_id)->first();
+            $data = LeaveRequest::where('employee_id', $employee->id)
+            ->orderby('created_at', 'desc')
+            ->get();
             if($data){
                 return response()->json([
                     'status'=> true,

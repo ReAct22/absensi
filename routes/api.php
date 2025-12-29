@@ -23,9 +23,10 @@ Route::middleware('auth:sanctum', 'check.session')->group(function () {
         Route::post('/location', [UserLocationController::class, 'store']);
     });
     Route::post('/attendance/presensi', [AttendanceController::class, 'store']);
-    Route::get('/attendance/daily/{id}', [AttendanceController::class, 'presensiDaily']);
-    Route::get('/attendance/history/{id}', [AttendanceController::class, 'history']);
+    Route::get('/attendance/daily/', [AttendanceController::class, 'presensiDaily']);
+    Route::get('/attendance/history/', [AttendanceController::class, 'history']);
     Route::get('/location/history', [UserLocationController::class, 'history']);
     Route::post('/leave-request/store', [ApiLeaverequestController::class, 'leave_request']);
+    Route::get('/leave-request/history', [ApiLeaverequestController::class, 'getLeave']);
     Route::post('/logout', [AuthApiController::class, 'logout']);
 });

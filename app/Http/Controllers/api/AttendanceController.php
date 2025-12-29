@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Helpers\GeoHelper;
 use App\Http\Controllers\Controller;
 use App\Models\AttendanceLog;
+use App\Models\Employee;
 use App\Models\GeoFence;
 use App\Models\UserLocation;
 use Carbon\Carbon;
@@ -12,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 // use Illuminate\Support\Facades\DB as FacadesDB;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
@@ -19,9 +21,11 @@ use function Symfony\Component\Clock\now;
 
 class AttendanceController extends Controller
 {
-    public function presensiDaily($employee_id)
+    public function presensiDaily()
     {
         $date = Carbon::now();
+        $user_id = Auth::user()->id;
+        $employee_id = Employee::where('user_id', $user_id)->first();
 
         $presensi = AttendanceLog::where('employee_id', $employee_id)
             ->whereDate('created_at', $date)
@@ -35,8 +39,11 @@ class AttendanceController extends Controller
         ], 200);
     }
 
-    public function history($employee_id)
+    public function history()
     {
+        $user_id = Auth::user()->id;
+        $employee_id = Employee::where('user_id', $user_id)->first();
+        // dd($employee_id);
         $data = DB::table('attendance_logs as al')
             ->leftJoin('employees as e', 'al.employee_id', '=', 'e.id')
             ->select(
@@ -66,9 +73,9 @@ class AttendanceController extends Controller
             ) AS status
         ")
             )
-            ->where('al.employee_id', $employee_id)
+            ->where('al.employee_id', $employee_id->id)
             ->groupBy('al.employee_id', 'e.full_name')
-            ->first(); // karena hasilnya 1 row
+            ->get(); // karena hasilnya 1 row
         // dd($data);
         return response()->json([
             'status' => true,
@@ -79,12 +86,14 @@ class AttendanceController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'time' => 'required',
             'longitude' => 'required|numeric',
             'latitude' => 'required|numeric',
             'photo' => 'required|image|mimes:png,jpg,jpeg|max:2048'
         ]);
+
+        Log::info('VALIDATED DATA', $validated);
 
         $employeeId = Auth::user()->employee->id;
 
