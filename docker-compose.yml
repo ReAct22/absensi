@@ -28,9 +28,9 @@ services:
     working_dir: /var/www/html
     volumes:
       - .:/var/www/html
-    command: php artisan reverb:start --host=0.0.0.0 --port=8002
+    command: php artisan reverb:start --host=0.0.0.0 --port=8000
     ports:
-      - "8002:8002"
+      - "8002:80"
     depends_on:
       - app
 
