@@ -36,7 +36,7 @@
 <script type="text/javascript" src="https://rawgit.com/grudus/Timepicker/master/dist/grudus-timepicker.es5.js"></script>
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-@vite(['resources/js/app.js'])
+{{-- @vite(['resources/js/app.js']) --}}
 
 
 
