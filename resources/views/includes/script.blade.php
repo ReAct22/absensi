@@ -7,9 +7,7 @@
 <script src="{{ asset('admin/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <!-- ChartJS -->
 <script src="{{ asset('admin/plugins/chart.js/Chart.min.js') }}">
-    < /> <
-    !--Sparkline-- >
-    <
+    < /> <!--Sparkline-- > <
     script src = "{{ asset('admin/plugins/sparklines/sparkline.js') }}" >
 </script>
 <!-- JQVMap -->
@@ -38,6 +36,7 @@
 <script type="text/javascript" src="https://rawgit.com/grudus/Timepicker/master/dist/grudus-timepicker.es5.js"></script>
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+@vite(['resources/js/app.js'])
 
 
 
