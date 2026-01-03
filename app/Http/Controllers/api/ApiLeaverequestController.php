@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Events\NotificationCreated;
 use App\Http\Controllers\Controller;
 use App\Mail\LeaveMail;
 use App\Models\Employee;
 use App\Models\LeaveRequest;
+use App\Models\Notification;
 use App\Models\Position;
 use Carbon\Carbon;
 use Exception;
@@ -68,6 +70,16 @@ class ApiLeaverequestController extends Controller
             'date_approve' => 'required|date',
             'employee_id' => 'required|integer'
         ]);
+
+        $notif = Notification::create([
+            'employee_id' => $request->employee_id,
+            'title' => 'approve leave',
+            'message' => 'Izi sudah di approve',
+            'type' => 'leave request',
+            'is_read' => 0
+        ]);
+
+        event(new NotificationCreated($notif));
 
         $employee_request = LeaveRequest::where('employee_id', $request->employee_id)->first();
 
